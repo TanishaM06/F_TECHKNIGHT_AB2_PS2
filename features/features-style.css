@@ -1,0 +1,153 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #7a7a7c;
+}
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #444;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(100% - 20px);
+    z-index: 1000;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 0 10px;
+    transition: background 0.3s;
+    border-radius: 5px;
+}
+
+.navbar a:hover {
+    background: #575757;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    margin-left: 40px;
+}
+.sidebar {
+    width: 250px;
+    background: #333;
+    color: white;
+    height: 150vh;
+    position: fixed;
+    left: -250px;
+    top: 0;
+    padding: 30px 20px;
+    transition: left 0.3s ease-in-out;
+    border-radius: 0 10px 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 16px;
+    padding-top: 40px;
+    margin-top: 40px;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 12px;
+    transition: background 0.3s;
+    border-radius: 10px;
+}
+
+.sidebar ul li a:hover {
+    background: #575757;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    left: 15px;
+    top: 20px;
+    background: #444;
+    color: white;
+    padding: 15px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+header {
+    background: #101011;
+    color: #fcfdff; 
+    padding: 20px;
+    text-align: center;
+}
+
+.features {
+    padding: 20px;
+    background: #e0e2e6;
+}
+
+.feature-point {
+    border: 1px solid #7a7575;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.demo {
+    padding: 20px;
+    background: #878a8d;
+    text-align: center;
+}
+
+.demo video {
+    max-width: 100%;
+    height: auto;
+}
+
+.cta {
+    padding: 20px;
+    background: #404244;
+    color: #fff;
+    text-align: center;
+}
+
+.cta-button {
+    background: #fff;
+    color: #2c2f31;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background: #333;
+    color: #fff;
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Editor Sample</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+}
+        #container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+}
+        .new-element {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="addElement()">Add Element</button>
+    <div id="container"></div>
+    <script>
+        var counter = 0;
+        function addElement() {
+            counter++;
+            var newDiv = document.createElement('div');
+            newDiv.textContent = 'Element ' + counter;
+            newDiv.className = 'new-element';
+            document.getElementById('container').appendChild(newDiv);
+        }
+    </script>
+</body>
+</html>

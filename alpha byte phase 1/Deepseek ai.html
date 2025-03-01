@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Drag-and-Drop UI Editor</title>
+    <link rel="stylesheet" href="deepseek-ai-style.css">
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="tool" draggable="true" data-type="button">Button</div>
+    <div class="tool" draggable="true" data-type="text">Text Field</div>
+    <div class="tool" draggable="true" data-type="image">Image</div>
+</div>
+
+<div id="editor"></div>
+<button id="goButton">Go</button>
+
+<script>
+    const editor = document.getElementById('editor');
+
+    document.querySelectorAll('.tool').forEach(tool => {
+        tool.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('type', tool.getAttribute('data-type'));
+        });
+    });
+
+    editor.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    editor.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('type');
+        const element = createElement(type);
+        element.style.left = e.clientX - editor.offsetLeft + 'px';
+        element.style.top = e.clientY - editor.offsetTop + 'px';
+        editor.appendChild(element);
+
+        makeDraggable(element);
+    });
+
+    function createElement(type) {
+        let element;
+        if (type === 'button') {
+            element = document.createElement('button');
+            element.innerText = 'Button';
+        } else if (type === 'text') {
+            element = document.createElement('input');
+            element.type = 'text';
+            element.placeholder = 'Enter text';
+        } else if (type === 'image') {
+            element = document.createElement('img');
+            element.src = 'https://via.placeholder.com/100';
+            element.style.width = '100px';
+            element.style.height = '100px';
+        }
+        element.classList.add('draggable');
+        return element;
+    }
+
+    function makeDraggable(element) {
+        let offsetX, offsetY, isDragging = false;
+
+        element.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                element.style.left = e.clientX - offsetX - editor.offsetLeft + 'px';
+                element.style.top = e.clientY - offsetY - editor.offsetTop + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+
+    document.getElementById('goButton').addEventListener('click', () => {
+        alert('Go button clicked! Implement desired action here.');
+    });
+</script>
+
+</body>
+</html>

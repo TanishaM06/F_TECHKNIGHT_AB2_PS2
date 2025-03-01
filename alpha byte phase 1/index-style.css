@@ -1,0 +1,251 @@
+
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Open+Sans:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #444;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 20px);
+            z-index: 1000;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 10px;
+            transition: background 0.3s;
+            border-radius: 5px;
+        }
+
+        .navbar a:hover {
+            background: #575757;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-left: 40px;
+        }
+
+        .boton-elegante {
+            padding: 7px 14px;
+            border: 2px solid #2c2c2c;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .boton-elegante:hover {
+            border-color: #666666;
+            background: #292929;
+        }
+
+        header {
+            text-align: center;
+            width: 100%;
+            margin-top: 0px;
+            padding: 100px 0;
+            background-image: linear-gradient(135deg, #555 10%, #222 100%);
+            color: #FFF;
+            text-shadow: 1px 1px 1px #333;
+            border-radius: 0 0 85% 85% / 30%;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 80px;
+        }
+
+        h3, p {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: #333;
+            background: #fff;
+            box-shadow: 0 3px 20px 0 #0000003b;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #333;
+            color: white;
+            height: 150vh;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            padding: 30px 20px;
+            transition: left 0.3s ease-in-out;
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 16px;
+            padding-top: 40px;
+            margin-top: 40px;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            transition: background 0.3s;
+            border-radius: 10px;
+        }
+
+        .sidebar ul li a:hover {
+            background: #575757;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            left: 15px;
+            top: 20px;
+            background: #444;
+            color: white;
+            padding: 15px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        .content {
+            margin-left: 0;
+            padding: 20px;
+            flex: 1;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .sidebar.open + .content {
+            margin-left: 250px;
+        }
+        .panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px;
+            margin: 20px auto;
+            margin-left: 5%;
+            margin-right: 2%;
+            max-width: 90%;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    
+        .panel img {
+            width: 40%;
+            height: auto;
+            border-radius: 10px;
+        }
+    
+        .panel-content {
+            width: 50%;
+            text-align: left;
+        }
+    
+        .panel h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+    
+        .panel p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    
+        .panel button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            background: #fff;
+            color: #333;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+    
+        .panel button:hover {
+            background: #ddd;
+        }
+    
+        .panel:nth-child(odd) {
+            background: linear-gradient(135deg, #222, #444);
+        }
+    
+        .panel:nth-child(even) {
+            background: linear-gradient(135deg, #444, #666);
+            flex-direction: row-reverse;
+        }
+    
+        @media (max-width: 768px) {
+            .panel {
+                flex-direction: column;
+                text-align: center;
+            }
+    
+            .panel img,
+            .panel-content {
+                width: 100%;
+            }
+        }
+        footer {
+            background: #444;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            width: 100%;
+        }

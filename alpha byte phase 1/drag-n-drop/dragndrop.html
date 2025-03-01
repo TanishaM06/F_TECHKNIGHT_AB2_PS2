@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Component Designer with AI Integration</title>
+    <link rel="stylesheet" href="dragndrop-style.css">
+</head>
+<body>
+    <header>
+        <h1>UI Component Designer with AI</h1>
+    </header>
+    <main>
+        <div class="container">
+            <section class="component-library">
+                <h2>Component Library</h2>
+                <div class="components">
+                    <div class="component" draggable="true" data-type="button">Button</div>
+                    <div class="component" draggable="true" data-type="input">Input Field</div>
+                    <div class="component" draggable="true" data-type="image">Image</div>
+                    <div class="component" draggable="true" data-type="modal">Modal</div>
+                    <div class="component" draggable="true" data-type="nav-bar">Navigation Bar</div>
+                    <div class="component" draggable="true" data-type="form">Input Form</div>
+                </div>
+            </section>
+            <section class="design-area">
+                <h2>Drag & Drop Design Area</h2>
+                <div class="drop-zone" id="designArea"></div>
+            </section>
+            <section class="ai-suggestions">
+                <h2>AI-Powered Suggestions</h2>
+                <select id="deviceType" onchange="getAiSuggestions()">
+                    <option value="desktop">Desktop</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="mobile">Mobile</option>
+                </select>
+                <button onclick="getAiSuggestions()">Get AI Suggestions</button>
+                <div id="aiOutput"></div>
+            </section>
+            <section class="preview">
+                <h2>Real-Time Preview</h2>
+                <button onclick="previewDesign()">Preview Design</button>
+                <div id="previewArea"></div>
+            </section>
+            <section class="customization">
+                <h2>Customize Components</h2>
+                <input type="color" id="colorPicker" onchange="updateStyle('backgroundColor', this.value)">
+                <input type="range" id="fontSize" min="10" max="30" onchange="updateStyle('fontSize', this.value + 'px')">
+                <input type="range" id="borderWidth" min="0" max="5" onchange="updateStyle('borderWidth', this.value + 'px')">
+                <select id="borderStyle" onchange="updateStyle('borderStyle', this.value)">
+                    <option value="none">None</option>
+                    <option value="solid">Solid</option>
+                    <option value="dashed">Dashed</option>
+                    <option value="dotted">Dotted</option>
+                </select>
+                <button onclick="saveDesign()">Save Design</button>
+            </section>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

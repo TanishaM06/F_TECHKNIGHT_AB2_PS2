@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login-style.css">
+</head>
+<body>
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../features.html">AI Integration</a></li>
+            <li><a href="../demo.html">UI Components</a></li>
+            <li><a href="../pricing.html">Design</a></li>
+            <li><a href="../case-study/case-study.html">Case Studies</a></li>
+        </ul>
+    </div>
+    <div class="navbar">
+        <div class="navbar-links">
+            <div class="logo">UI BUILDER</div>
+            <a href="../index.html">Home</a>
+            <a href="../about-us/about-us.html">About Us</a>
+            <a href="../features.html">Features</a>
+            <a href="../blog/Blog.html">Blog</a>
+            <a href="../contact-us/Contact-us.html">Contact</a>
+        </div>
+    </div>    
+    <div class="login-container">
+        <h2>Login</h2>
+        <form action="#" method="post">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+            <p class="register-link">Don't have an account? <a href="#">Register</a></p>
+        </form>
+    </div>
+    <script src="login-script.js"></script>
+</body>
+</html>
