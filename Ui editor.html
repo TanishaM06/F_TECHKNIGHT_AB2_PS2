@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Drag-and-Drop UI Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            height: 100vh;
+            overflow: hidden;
+        }
+        #editor {
+            width: 90%;
+            height: 80%;
+            background: white;
+            margin: 2% auto;
+            border: 2px solid #ccc;
+            position: relative;
+            overflow: hidden;
+        }
+        .toolbar {
+            padding: 10px;
+            background: #333;
+            color: white;
+            text-align: center;
+        }
+        .tool {
+            display: inline-block;
+            background: #fff;
+            color: #333;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: grab;
+            border-radius: 5px;
+        }
+        .draggable {
+            position: absolute;
+            padding: 10px;
+            border: 1px solid #666;
+            background-color: lightblue;
+            cursor: move;
+            resize: both;
+            overflow: auto;
+        }
+        #goButton {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        #goButton:hover {
+            background: #218838;
+        }
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .controls label {
+            display: block;
+            margin: 5px 0;
+        }
+        .controls input, .controls select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="tool" draggable="true" data-type="button">Button</div>
+    <div class="tool" draggable="true" data-type="text">Text Field</div>
+    <div class="tool" draggable="true" data-type="image">Image</div>
+    <div class="tool" draggable="true" data-type="form">Form</div>
+</div>
+
+<div id="editor"></div>
+<button id="goButton">Go</button>
+
+<div class="controls">
+    <label for="colorPicker">Background Color:</label>
+    <input type="color" id="colorPicker" value="#add8e6">
+    <label for="fontSize">Font Size:</label>
+    <input type="number" id="fontSize" min="10" max="50" value="14">
+    <label for="borderColor">Border Color:</label>
+    <input type="color" id="borderColor" value="#666">
+    <label for="borderWidth">Border Width:</label>
+    <input type="number" id="borderWidth" min="1" max="10" value="1">
+    <label for="padding">Padding:</label>
+    <input type="number" id="padding" min="0" max="20" value="10">
+</div>
+
+<script>
+    const editor = document.getElementById('editor');
+    const colorPicker = document.getElementById('colorPicker');
+    const fontSizeInput = document.getElementById('fontSize');
+    const borderColorInput = document.getElementById('borderColor');
+    const borderWidthInput = document.getElementById('borderWidth');
+    const paddingInput = document.getElementById('padding');
+
+    let selectedElement = null;
+
+    // Add drag-and-drop functionality
+    document.querySelectorAll('.tool').forEach(tool => {
+        tool.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('type', tool.getAttribute('data-type'));
+        });
+    });
+
+    editor.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    editor.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('type');
+        const element = createElement(type);
+        element.style.left = e.clientX - editor.offsetLeft + 'px';
+        element.style.top = e.clientY - editor.offsetTop + 'px';
+        editor.appendChild(element);
+
+        makeDraggable(element);
+        makeResizable(element);
+        element.addEventListener('click', () => selectElement(element));
+    });
+
+    // Create elements based on type
+    function createElement(type) {
+        let element;
+        if (type === 'button') {
+            element = document.createElement('button');
+            element.innerText = 'Button';
+        } else if (type === 'text') {
+            element = document.createElement('input');
+            element.type = 'text';
+            element.placeholder = 'Enter text';
+        } else if (type === 'image') {
+            element = document.createElement('img');
+            element.src = 'https://via.placeholder.com/100';
+            element.style.width = '100px';
+            element.style.height = '100px';
+        } else if (type === 'form') {
+            element = document.createElement('div');
+            element.innerHTML = `
+                <form>
+                    <input type="text" placeholder="Name"><br>
+                    <input type="email" placeholder="Email"><br>
+                    <button type="submit">Submit</button>
+                </form>
+            `;
+        }
+        element.classList.add('draggable');
+        return element;
+    }
+
+    // Make elements draggable
+    function makeDraggable(element) {
+        let offsetX, offsetY, isDragging = false;
+
+        element.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+            selectElement(element);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                element.style.left = e.clientX - offsetX - editor.offsetLeft + 'px';
+                element.style.top = e.clientY - offsetY - editor.offsetTop + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+
+    // Make elements resizable
+    function makeResizable(element) {
+        element.style.resize = 'both';
+        element.style.overflow = 'auto';
+    }
+
+    // Select an element for customization
+    function selectElement(element) {
+        if (selectedElement) {
+            selectedElement.style.border = '1px solid #666';
+        }
+        selectedElement = element;
+        selectedElement.style.border = '2px dashed #000';
+
+        // Apply current control values to the selected element
+        applyStyles();
+    }
+
+    // Apply styles from controls to the selected element
+    function applyStyles() {
+        if (selectedElement) {
+            selectedElement.style.backgroundColor = colorPicker.value;
+            selectedElement.style.fontSize = fontSizeInput.value + 'px';
+            selectedElement.style.borderColor = borderColorInput.value;
+            selectedElement.style.borderWidth = borderWidthInput.value + 'px';
+            selectedElement.style.padding = paddingInput.value + 'px';
+        }
+    }
+
+    // Update styles when control values change
+    colorPicker.addEventListener('input', applyStyles);
+    fontSizeInput.addEventListener('input', applyStyles);
+    borderColorInput.addEventListener('input', applyStyles);
+    borderWidthInput.addEventListener('input', applyStyles);
+    paddingInput.addEventListener('input', applyStyles);
+
+    // Go button functionality
+    document.getElementById('goButton').addEventListener('click', () => {
+        alert('Go button clicked! Implement desired action here.');
+    });
+</script>
+</body>
+</html>
