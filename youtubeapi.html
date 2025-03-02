@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eduera YouTube Playlist</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0d0d0d;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: rgb(59, 7, 245);
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    header img {
+      height: 50px;
+    }
+    .search-container {
+      display: flex;
+      align-items: center;
+    }
+    .search-container input {
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+    .search-container button {
+      padding: 8px 12px;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .search-container button:hover {
+      background-color: #f0f0f0;
+    }
+    .video-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .video-card {
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    .video-card:hover {
+      transform: scale(1.05);
+    }
+    .video-card img {
+      width: 100%;
+      height: auto;
+    }
+    .video-card h3 {
+      padding: 10px;
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #141414;
+      color: rgb(247, 8, 8);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="edueralogo.jpg.jpeg" alt="Eduera Logo">
+      <h1>EDUERA</h1>
+    </div>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search videos...">
+      <button onclick="searchVideos()">🔍</button>
+    </div>
+  </header>
+
+  <div class="video-container" id="video-container">
+    <!-- YouTube videos will be dynamically inserted here -->
+  </div>
+
+  <div class="footer">
+    <p>© 2023 Eduera. All rights reserved.</p>
+  </div>
+
+  <script>
+    // API Key and Playlist ID
+    const API_KEY = 'AIzaSyABd8OFm3gUg-Zeuy8iKvUtInbQ8wBHh1Q';
+    const PLAYLIST_ID = 'PLfqMhTWNBTe0PY9xunOzsP5kmYIz2Hu7i';
+
+    // Fetch videos from the playlist
+    async function fetchVideos() {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${PLAYLIST_ID}&maxResults=10&key=${API_KEY}`
+        );
+        const data = await response.json();
+        displayVideos(data.items);
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+      }
+    }
+
+    // Display videos on the webpage
+    function displayVideos(videos) {
+      const videoContainer = document.getElementById('video-container');
+      videoContainer.innerHTML = ''; // Clear existing content
+
+      videos.forEach(video => {
+        const videoId = video.snippet.resourceId.videoId;
+        const title = video.snippet.title;
+        const thumbnail = video.snippet.thumbnails.medium.url;
+
+        const videoCard = document.createElement('div');
+        videoCard.className = 'video-card';
+        videoCard.innerHTML = `
+          <img src="${thumbnail}" alt="${title}">
+          <h3>${title}</h3>
+        `;
+        videoCard.addEventListener('click', () => {
+          window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+        });
+        videoContainer.appendChild(videoCard);
+      });
+    }
+
+    // Search videos by keyword
+    async function searchVideos() {
+      const query = document.getElementById('search-input').value;
+      if (!query) return;
+
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=10&type=video&key=${API_KEY}`
+        );
+        const data = await response.json();
+        displaySearchResults(data.items);
+      } catch (error) {
+        console.error('Error searching videos:', error);
+      }
+    }
+
+    // Display search results
+    function displaySearchResults(videos) {
+      const videoContainer = document.getElementById('video-container');
+      videoContainer.innerHTML = ''; // Clear existing content
+
+      videos.forEach(video => {
+        const videoId = video.id.videoId;
+        const title = video.snippet.title;
+        const thumbnail = video.snippet.thumbnails.medium.url;
+
+        const videoCard = document.createElement('div');
+        videoCard.className = 'video-card';
+        videoCard.innerHTML = `
+          <img src="${thumbnail}" alt="${title}">
+          <h3>${title}</h3>
+        `;
+        videoCard.addEventListener('click', () => {
+          window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+        });
+        videoContainer.appendChild(videoCard);
+      });
+    }
+
+    // Fetch videos when the page loads
+    fetchVideos();
+  </script>
+</body>
+</html>
