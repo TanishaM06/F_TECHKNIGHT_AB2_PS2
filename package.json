@@ -1,18 +1,12 @@
 {
-  "name": "ui-design-platform",
-  "version": "1.0.0",
-  "description": "A platform for UI design with AI capabilities.",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "aws-sdk": "^2.1030.0",
-    "axios": "^0.21.1",
-    "bcrypt": "^5.1.1",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "pg": "^8.7.1",
-    "socket.io": "^4.8.1"
+    "name": "login-app-server",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "cors": "^2.8.5"
+    }
   }
-}

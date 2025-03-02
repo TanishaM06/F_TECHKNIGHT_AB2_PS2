@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Meet Integration</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #1a73e8;
+      margin-top: 0;
+    }
+
+    .button {
+      padding: 12px 24px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button:hover {
+      background-color: #1557b0;
+    }
+
+    .button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .button-loading {
+      position: relative;
+      color: transparent;
+    }
+
+    .button-loading::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    #meetLink {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      display: none;
+    }
+
+    #meetLink.visible {
+      display: block;
+    }
+
+    #meetLink a {
+      color: #1a73e8;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    #meetLink a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #d93025;
+      margin-top: 16px;
+      padding: 12px;
+      background-color: #fce8e6;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Google Meet Integration</h1>
+    <button id="createMeetButton" class="button" onclick="handleCreateMeet()">
+      Create Google Meet
+    </button>
+    <div id="meetLink"></div>
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+
+  <script>
+    let tokenClient = null;
+    let gapiInited = false;
+    let gisInited = false;
+    
+    const CLIENT_ID = '424674461682-r16io806pfmeq1jon933ghl25e7cplm6.apps.googleusercontent.com';
+    const API_KEY = 'AIzaSyBwupjf-5eBQHBYcKL8XnxOEvkP4X1m2Uk';
+    const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+    const SCOPES = "https://www.googleapis.com/auth/calendar";
+
+    // DOM elements
+    const createMeetButton = document.getElementById('createMeetButton');
+    const meetLinkDiv = document.getElementById('meetLink');
+    const errorMessageDiv = document.getElementById('errorMessage');
+
+    function showLoading() {
+      createMeetButton.disabled = true;
+      createMeetButton.classList.add('button-loading');
+    }
+
+    function hideLoading() {
+      createMeetButton.disabled = false;
+      createMeetButton.classList.remove('button-loading');
+    }
+
+    function showError(message) {
+      errorMessageDiv.textContent = message;
+      errorMessageDiv.classList.add('visible');
+    }
+
+    function hideError() {
+      errorMessageDiv.classList.remove('visible');
+    }
+
+    function showMeetLink(link) {
+      meetLinkDiv.innerHTML = `
+        <strong>Google Meet Link:</strong><br>
+        <a href="${link}" target="_blank">${link}</a>
+      `;
+      meetLinkDiv.classList.add('visible');
+    }
+
+    function gapiLoaded() {
+      gapi.load('client', initializeGapiClient);
+    }
+
+    async function initializeGapiClient() {
+      try {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: DISCOVERY_DOCS,
+        });
+        gapiInited = true;
+        maybeEnableButtons();
+      } catch (error) {
+        showError('Error initializing GAPI client: ' + error.message);
+        console.error('GAPI init error:', error);
+      }
+    }
+
+    function gisLoaded() {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: '', // defined later
+      });
+      gisInited = true;
+      maybeEnableButtons();
+    }
+
+    function maybeEnableButtons() {
+      if (gapiInited && gisInited) {
+        createMeetButton.disabled = false;
+      }
+    }
+
+    async function createGoogleMeet() {
+      const event = {
+        summary: 'Google Meet Event',
+        description: 'This is a Google Meet event created via the Google Calendar API.',
+        start: {
+          dateTime: new Date().toISOString(),
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+        end: {
+          dateTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+        conferenceData: {
+          createRequest: {
+            requestId: `meet-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+            conferenceSolutionKey: {
+              type: 'hangoutsMeet',
+            },
+          },
+        },
+      };
+
+      try {
+        const request = gapi.client.calendar.events.insert({
+          calendarId: 'primary',
+          resource: event,
+          conferenceDataVersion: 1,
+        });
+
+        const result = await request.execute();
+        if (!result.hangoutLink) {
+          throw new Error('No meeting link was generated');
+        }
+        showMeetLink(result.hangoutLink);
+      } catch (error) {
+        throw new Error('Failed to create Google Meet event: ' + (error.message || 'Unknown error'));
+      }
+    }
+
+    async function handleCreateMeet() {
+      hideError();
+      showLoading();
+
+      if (!tokenClient) {
+        showError('Authorization client not initialized. Please refresh the page and try again.');
+        hideLoading();
+        return;
+      }
+
+      try {
+        // Set the callback before requesting the token
+        tokenClient.callback = async (response) => {
+          if (response.error !== undefined) {
+            throw new Error(response.error);
+          }
+          await createGoogleMeet();
+        };
+
+        // Request the token
+        if (gapi.client.getToken() === null) {
+          tokenClient.requestAccessToken({ prompt: 'consent' });
+        } else {
+          tokenClient.requestAccessToken({ prompt: '' });
+        }
+      } catch (error) {
+        showError(error.message || 'An unexpected error occurred');
+        console.error('Create meet error:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+  </script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+  <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+</body>
+</html>
